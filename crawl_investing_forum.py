@@ -8,8 +8,9 @@ import os
 
 # profile = webdriver.FirefoxProfile()
 # profile.set_preference("dom.disable_open_during_load", False)
+# driver = webdriver.Firefox(firefox_profile=profile, executable_path=os.getcwd()+"/geckodriver")
 
-driver = webdriver.Firefox(firefox_profile=profile, executable_path=os.getcwd()+"/geckodriver")
+driver = webdriver.Chrome("./chromedriver")
 
 for i in range(5):
     url="https://www.investing.com/crypto/bitcoin/chat/{}".format(i)
