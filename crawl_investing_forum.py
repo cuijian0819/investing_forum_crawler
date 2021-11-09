@@ -3,28 +3,49 @@ import lxml
 import time
 from pdb import set_trace
 from selenium.webdriver.common.by import By
+import os
 
 
-i=3
+# profile = webdriver.FirefoxProfile()
+# profile.set_preference("dom.disable_open_during_load", False)
 
-driver = webdriver.Chrome("./chromedriver")
-driver.implicitly_wait(3)
+driver = webdriver.Firefox(firefox_profile=profile, executable_path=os.getcwd()+"/geckodriver")
 
-url="https://www.investing.com/crypto/bitcoin/chat/{}".format(i)
+for i in range(5):
+    url="https://www.investing.com/crypto/bitcoin/chat/{}".format(i)
 
-response = driver.get(url)
+    response = driver.get(url)
+    driver.implicitly_wait(10)
 
-show_reply_list = driver.find_elements(By.XPATH, '//a[@class="showMoreReplies"]')
-while (show_reply_list!=[]):
-    for show_reply in show_reply_list:
-        show_reply[0].click()
+
+    # close popup window
+    try:
+        driver.find_elements(By.XPATH, '//i[@class="popupCloseIcon largeBannerCloser"]')[0].click()
+    except:
+        print("no popup")
+
+    # show prev replies
     show_reply_list = driver.find_elements(By.XPATH, '//a[@class="showMoreReplies"]')
+    while (show_reply_list!=[]):
+    	for show_reply in show_reply_list:
+            try:
+                show_reply.click()
+            except:
+                driver.find_elements(By.XPATH, '//i[@class="popupCloseIcon largeBannerCloser"]')[0].click()
+            driver.implicitly_wait(5)
 
-show_text_list = driver.find_elements(By.XPATH, '//span[@class="showMoreText"]') 
-for show_text in show_text_list: 
-    show_text.click()
-    driver.implicitly_wait(5)
+    # show more 
+    show_text_list = driver.find_elements(By.XPATH, '//span[@class="showMoreText"]') 
+    for show_text in show_text_list: 
+        try:
+           show_text.click()  
+        except:
+           driver.find_elements(By.XPATH, '//i[@class="popupCloseIcon largeBannerCloser"]')[0].click()
+
+        driver.implicitly_wait(5)
 
 
-with open('investing_btc_{}.html'.format(i), 'w') as f:
-    f.write(driver.page_source)
+    with open('data/raw/investing_btc_{}.html'.format(i), 'w') as f:
+        f.write(driver.page_source)
+
+
